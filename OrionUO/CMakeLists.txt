@@ -73,7 +73,6 @@ set(wisp_src
   Wisp/WispMappedFile.cpp
   Wisp/WispPacketMessage.cpp
   Wisp/WispTextFileParser.cpp
-  Wisp/WispThreadedTimer.cpp
 )
 
 set(gameobjects_src
