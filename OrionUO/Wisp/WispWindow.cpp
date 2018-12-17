@@ -699,12 +699,6 @@ LRESULT CWindow::OnWindowProc(WindowHandle &hWnd, UINT &message, WPARAM &wParam,
             OnTimer((uint32_t)wParam);
             break;
         }
-        case Wisp::CThreadedTimer::MessageID:
-        {
-            OnThreadedTimer((uint32_t)wParam, (Wisp::CThreadedTimer *)lParam);
-            //DebugMsg("OnThreadedTimer %i, 0x%08X\n", wParam, lParam);
-            return 0;
-        }
         case WM_SYSCHAR:
         {
             if (wParam == KEY_F4 && (GetAsyncKeyState(KEY_MENU) & 0x80000000)) //Alt + F4
