@@ -8,7 +8,7 @@
 #endif
 
 #if !USE_BASS
-#define WITH_SDL2
+#define WITH_SDL2_STATIC
 
 #define TSF_IMPLEMENTATION
 #define TSF_NO_STDIO
@@ -250,7 +250,8 @@ bool CSoundManager::Init()
         LOG("Could not load soundfont file for midi");
     }
 #else
-    s_backend.init();
+    result x = s_backend.init();
+    LOG("%d", x);
     s_backend.setGlobalVolume(0.30f);
 #endif
     LOG("Sound init successfull.\n");
