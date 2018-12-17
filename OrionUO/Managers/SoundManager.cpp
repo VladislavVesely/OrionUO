@@ -250,8 +250,7 @@ bool CSoundManager::Init()
         LOG("Could not load soundfont file for midi");
     }
 #else
-    result x = s_backend.init();
-    LOG("%d", x);
+    s_backend.init();
     s_backend.setGlobalVolume(0.30f);
 #endif
     LOG("Sound init successfull.\n");
