@@ -138,7 +138,6 @@ typedef SoundInfo *SoundHandle;
 #include "Wisp/WispPacketReader.h"
 #include "Wisp/WispTextFileParser.h"
 #include "Wisp/WispThread.h"
-#include "Wisp/WispThreadedTimer.h"
 #include "Wisp/WispWindow.h"
 
 #include "DefinitionMacro.h"

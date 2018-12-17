@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // Copyright (C) August 2016 Hotride
 
 #pragma once
@@ -7,9 +7,7 @@
 
 enum
 {
-    RENDER_TIMER_ID = 1,
-    UPDATE_TIMER_ID = 2,
-    FASTLOGIN_TIMER_ID = 3,
+    FASTLOGIN_TIMER_ID = 1,
 };
 
 class COrionWindow : public Wisp::CWindow
@@ -20,6 +18,7 @@ public:
 
     void SetRenderTimerDelay(int delay);
     void EmulateOnLeftMouseButtonDown();
+    int GetRenderDelay();
 
     static const uint32_t MessageID = USER_MESSAGE_ID + 402;
 
@@ -44,12 +43,14 @@ protected:
     virtual void OnShow(bool show);
     virtual void OnSetText(const char *str);
     virtual void OnTimer(uint32_t id);
-    virtual void OnThreadedTimer(uint32_t nowTime, Wisp::CThreadedTimer *timer);
     virtual bool OnRepaint(const PaintEvent &ev);
     virtual bool OnUserMessages(const UserEvent &ev) override;
     virtual void OnTextInput(const TextEvent &ev) override;
     virtual void OnKeyDown(const KeyEvent &ev) override;
     virtual void OnKeyUp(const KeyEvent &ev) override;
+    
+private:
+    int m_iRenderDelay;
 };
 
 extern COrionWindow g_OrionWindow;

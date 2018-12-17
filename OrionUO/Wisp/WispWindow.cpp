@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 
 #include "WispWindow.h"
 #include <SDL.h>
@@ -1146,50 +1146,6 @@ uint32_t CWindow::PluginEvent(uint32_t id, void *data1, void *data2)
 
 #endif
 
-void CWindow::CreateThreadedTimer(
-    uint32_t id, int delay, bool oneShot, bool waitForProcessMessage, bool synchronizedDelay)
-{
-    DEBUG_TRACE_FUNCTION;
-    for (auto i = m_ThreadedTimersStack.begin(); i != m_ThreadedTimersStack.end(); ++i)
-    {
-        if ((*i)->TimerID == id)
-        {
-            return;
-        }
-    }
-
-    auto timer = new Wisp::CThreadedTimer(id, Handle, waitForProcessMessage);
-    m_ThreadedTimersStack.push_back(timer);
-    timer->Run(!oneShot, delay, synchronizedDelay);
-}
-
-void CWindow::RemoveThreadedTimer(uint32_t id)
-{
-    DEBUG_TRACE_FUNCTION;
-    for (auto i = m_ThreadedTimersStack.begin(); i != m_ThreadedTimersStack.end(); ++i)
-    {
-        if ((*i)->TimerID == id)
-        {
-            (*i)->Stop();
-            m_ThreadedTimersStack.erase(i);
-            break;
-        }
-    }
-}
-
-Wisp::CThreadedTimer *CWindow::GetThreadedTimer(uint32_t id)
-{
-    DEBUG_TRACE_FUNCTION;
-    for (auto i = m_ThreadedTimersStack.begin(); i != m_ThreadedTimersStack.end(); ++i)
-    {
-        if ((*i)->TimerID == id)
-        {
-            return *i;
-        }
-    }
-
-    return 0;
-}
 }; // namespace Wisp
 
 #if USE_WISP

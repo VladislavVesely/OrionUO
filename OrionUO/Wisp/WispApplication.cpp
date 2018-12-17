@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 
 #include "FileSystem.h"
 #include "WispThread.h"
@@ -57,12 +57,13 @@ int CApplication::Run()
         {
             quit = Wisp::g_WispWindow->OnWindowProc(event);
             if (quit)
-            {
                 break;
-            }
-
-            OnMainLoop();
         }
+        
+        OnMainLoop();
+        
+        // CPU Usage
+        SDL_Delay(CPU_USAGE_DELAY);
     }
     return EXIT_SUCCESS;
 #endif

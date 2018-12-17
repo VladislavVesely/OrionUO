@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 
 #pragma once
 
@@ -15,8 +15,6 @@ namespace Wisp
 {
 class CWindow
 {
-    deque<Wisp::CThreadedTimer *> m_ThreadedTimersStack;
-
 public:
     bool NoResize = false;
 
@@ -68,15 +66,6 @@ public:
     void RemoveTimer(uint32_t id);
     void Raise();
 
-    void CreateThreadedTimer(
-        uint32_t id,
-        int delay,
-        bool oneShot = false,
-        bool waitForProcessMessage = true,
-        bool synchronizedDelay = false);
-    void RemoveThreadedTimer(uint32_t id);
-    Wisp::CThreadedTimer *GetThreadedTimer(uint32_t id);
-
 protected:
     Wisp::CSize m_Size = Wisp::CSize(640, 480);
     Wisp::CSize m_MinSize = Wisp::CSize(640, 480);
@@ -101,7 +90,6 @@ protected:
     virtual void OnDeactivate() {}
     virtual void OnShow(bool show) {}
     virtual void OnTimer(uint32_t id) {}
-    virtual void OnThreadedTimer(uint32_t nowTime, Wisp::CThreadedTimer *timer) {}
     virtual void OnSetText(const char *text) {}
     virtual bool OnRepaint(const PaintEvent &ev);
     virtual bool OnUserMessages(const UserEvent &ev) { return true; }
