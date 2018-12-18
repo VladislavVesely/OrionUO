@@ -6,7 +6,7 @@
 COrionWindow g_OrionWindow;
 
 COrionWindow::COrionWindow()
-: m_iRenderDelay(0)
+    : m_iRenderDelay(0)
 {
 #if 0
     // Add some tests, this cliloc message seems to use broken UTF8
@@ -48,7 +48,7 @@ bool COrionWindow::OnCreate()
     }
 
     g_GL.UpdateRect();
-    
+
     return true;
 }
 

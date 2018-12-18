@@ -59,9 +59,9 @@ int CApplication::Run()
             if (quit)
                 break;
         }
-        
+
         OnMainLoop();
-        
+
         // CPU Usage
         SDL_Delay(CPU_USAGE_DELAY);
     }

@@ -48,7 +48,7 @@ protected:
     virtual void OnTextInput(const TextEvent &ev) override;
     virtual void OnKeyDown(const KeyEvent &ev) override;
     virtual void OnKeyUp(const KeyEvent &ev) override;
-    
+
 private:
     int m_iRenderDelay;
 };
