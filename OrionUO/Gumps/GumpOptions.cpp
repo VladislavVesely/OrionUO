@@ -3741,7 +3741,7 @@ void CGumpOptions::OnKeyDown(const KeyEvent &ev)
     }
     else
     {
-        if (key == KEY_RETURN)
+        if (key == KEY_RETURN || key == KEY_RETURN2)
         {
             if (g_ConfigManager.GetConsoleNeedEnter())
             {

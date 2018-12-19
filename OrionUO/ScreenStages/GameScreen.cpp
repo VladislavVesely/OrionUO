@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // Copyright (C) August 2016 Hotride
 
 #include <SDL_rect.h>
@@ -1711,7 +1711,7 @@ void CGameScreen::Render()
     {
         LOG("FPS=%i\n", FPScount);
         FPScount = currentFPS;
-        currentFPS = 0;
+        currentFPS = 1;
         lastRender = g_Ticks + 1000;
     }
     else
@@ -2604,6 +2604,7 @@ void CGameScreen::OnKeyDown(const KeyEvent &ev)
     switch (key)
     {
         case KEY_RETURN:
+        case KEY_RETURN2:
         {
             if (g_EntryPointer != nullptr)
             {

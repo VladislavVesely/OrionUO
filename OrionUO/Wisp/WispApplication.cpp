@@ -52,6 +52,7 @@ int CApplication::Run()
     bool quit = false;
     while (!quit)
     {
+        // 1] Handle all SDL events. Mouse, keyboard, windows etc..
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0)
         {
@@ -60,10 +61,14 @@ int CApplication::Run()
                 break;
         }
 
+        // 2] Run main loop, packets, rendering etc..
         OnMainLoop();
 
-        // CPU Usage
-        SDL_Delay(CPU_USAGE_DELAY);
+        // 3] Calculate proper delay based on settings and frame time.
+        int32_t iDynamicFPS = SDL_GetTicks() - g_Ticks;
+        int32_t iDelay = g_OrionWindow.GetRenderDelay();
+
+        SDL_Delay(std::max(iDelay - iDynamicFPS, CPU_USAGE_DELAY));
     }
     return EXIT_SUCCESS;
 #endif

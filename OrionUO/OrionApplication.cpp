@@ -13,8 +13,5 @@ void COrionApplication::OnMainLoop()
     g_ConnectionManager.Recv();
     g_PacketManager.ProcessPluginPackets();
     g_PacketManager.SendMegaClilocRequests();
-    g_Orion.Process(NextRenderTime <= g_Ticks);
-
-    if (NextRenderTime <= g_Ticks)
-        NextRenderTime = g_Ticks + (g_OrionWindow.GetRenderDelay() - CPU_USAGE_DELAY);
+    g_Orion.Process(true);
 }
