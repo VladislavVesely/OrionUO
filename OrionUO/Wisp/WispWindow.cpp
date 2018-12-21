@@ -1148,6 +1148,7 @@ uint32_t CWindow::PluginEvent(uint32_t id, void *data1, void *data2)
 
 #endif
 #if USE_TIMERTHREAD
+
 CThreadedTimer *CWindow::CreateThreadedTimer(
     uint32_t id, int delay, bool oneShot, bool waitForProcessMessage, bool synchronizedDelay)
 {
