@@ -699,6 +699,14 @@ LRESULT CWindow::OnWindowProc(WindowHandle &hWnd, UINT &message, WPARAM &wParam,
             OnTimer((uint32_t)wParam);
             break;
         }
+#if USE_TIMERTHREAD
+        case Wisp::CThreadedTimer::MessageID:
+        {
+            OnThreadedTimer((uint32_t)wParam, (Wisp::CThreadedTimer *)lParam);
+            //DebugMsg("OnThreadedTimer %i, 0x%08X\n", wParam, lParam);
+            return 0;
+        }
+#endif // USE_TIMERTHREAD
         case WM_SYSCHAR:
         {
             if (wParam == KEY_F4 && (GetAsyncKeyState(KEY_MENU) & 0x80000000)) //Alt + F4
@@ -1139,8 +1147,55 @@ uint32_t CWindow::PluginEvent(uint32_t id, void *data1, void *data2)
 }
 
 #endif
+#if USE_TIMERTHREAD
+CThreadedTimer *CWindow::CreateThreadedTimer(
+    uint32_t id, int delay, bool oneShot, bool waitForProcessMessage, bool synchronizedDelay)
+{
+    DEBUG_TRACE_FUNCTION;
+    for (auto i = m_ThreadedTimersStack.begin(); i != m_ThreadedTimersStack.end(); ++i)
+    {
+        if ((*i)->TimerID == id)
+        {
+            return nullptr;
+        }
+    }
 
-}; // namespace Wisp
+    auto timer = new Wisp::CThreadedTimer(id, Handle, waitForProcessMessage);
+    m_ThreadedTimersStack.push_back(timer);
+    timer->Run(!oneShot, delay, synchronizedDelay);
+
+    return timer;
+}
+
+void CWindow::RemoveThreadedTimer(uint32_t id)
+{
+    DEBUG_TRACE_FUNCTION;
+    for (auto i = m_ThreadedTimersStack.begin(); i != m_ThreadedTimersStack.end(); ++i)
+    {
+        if ((*i)->TimerID == id)
+        {
+            (*i)->Stop();
+            m_ThreadedTimersStack.erase(i);
+            break;
+        }
+    }
+}
+
+Wisp::CThreadedTimer *CWindow::GetThreadedTimer(uint32_t id)
+{
+    DEBUG_TRACE_FUNCTION;
+    for (auto i = m_ThreadedTimersStack.begin(); i != m_ThreadedTimersStack.end(); ++i)
+    {
+        if ((*i)->TimerID == id)
+        {
+            return *i;
+        }
+    }
+
+    return 0;
+}
+#endif // USE_TIMERTHREAD
+};     // namespace Wisp
 
 #if USE_WISP
 void GetDisplaySize(int *x, int *y)

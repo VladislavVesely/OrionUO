@@ -52,6 +52,19 @@ int CApplication::Run()
     bool quit = false;
     while (!quit)
     {
+#if USE_TIMERTHREAD
+        SDL_Event event;
+        while (SDL_PollEvent(&event) != 0)
+        {
+            quit = Wisp::g_WispWindow->OnWindowProc(event);
+            if (quit)
+            {
+                break;
+            }
+
+            OnMainLoop();
+        }
+#else
         // 1] Handle all SDL events. Mouse, keyboard, windows etc..
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0)
@@ -69,6 +82,7 @@ int CApplication::Run()
         int32_t iDelay = g_OrionWindow.GetRenderDelay();
 
         SDL_Delay(std::max(iDelay - iDynamicFPS, CPU_USAGE_DELAY));
+#endif // USE_TIMERTHREAD
     }
     return EXIT_SUCCESS;
 #endif

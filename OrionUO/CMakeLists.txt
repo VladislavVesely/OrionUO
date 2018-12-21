@@ -35,6 +35,12 @@ else()
   add_definitions(-DUSE_BASS=0)
 endif()
 
+if(ORION_THREADED)
+    add_definitions(-DUSE_TIMERTHREAD=1)
+else()
+    add_definitions(-DUSE_TIMERTHREAD=0)
+endif()
+
 if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
   # enable the latest C++ standard feature set,
   # and also disable MSVC specific extensions
@@ -73,6 +79,7 @@ set(wisp_src
   Wisp/WispMappedFile.cpp
   Wisp/WispPacketMessage.cpp
   Wisp/WispTextFileParser.cpp
+  Wisp/WispThreadedTimer.cpp
 )
 
 set(gameobjects_src

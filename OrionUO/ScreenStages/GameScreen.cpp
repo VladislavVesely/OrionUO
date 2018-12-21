@@ -924,9 +924,10 @@ void CGameScreen::AddOffsetCharacterTileToRenderList(CGameObject *obj, bool useO
     CGameCharacter *character = obj->GameCharacterPtr();
 
     // Make all characters draw in right order.
+    // TODO: Some cases are still broken. It moves tiles to different layers etc. But it should not be directly player related.
     bool bAdjust =
         character &&
-        (character->Direction == 6 || character->Direction == 2 ||
+        ((character->Direction & 7) == 6 || (character->Direction & 7) == 2 ||
          (!character->m_Steps.empty() && ((character->m_Steps.back().Direction & 7) == 6 ||
                                           (character->m_Steps.back().Direction & 7) == 2)));
 
