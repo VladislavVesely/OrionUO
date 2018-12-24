@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // Copyright (C) August 2016 Hotride
 
 #include "PacketManager.h"
@@ -1186,6 +1186,9 @@ PACKET_HANDLER(UpdatePlayer)
     uint8_t direction = ReadUInt8();
     char z = ReadUInt8();
 
+    // Invert character wakthrough bit.
+    flags ^= 0x10;
+    
     LOG("0x%08X 0x%04X %i 0x%04X 0x%02X %i %i %i %i %i\n",
         serial,
         graphic,
