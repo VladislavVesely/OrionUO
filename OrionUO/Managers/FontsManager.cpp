@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // Copyright (C) August 2016 Hotride
 
 CFontsManager g_FontManager;
@@ -120,17 +120,46 @@ bool CFontsManager::UnicodeFontExists(uint8_t font)
     return !(font >= 20 || m_UnicodeFontAddress[font] == 0);
 }
 
+#ifdef ENDOR
+bool CFontsManager::GoToWebLink(uint16_t link)
+{
+    DEBUG_TRACE_FUNCTION;
+    
+    bool bRetValue = false;
+    
+    WEBLINK_MAP::iterator it = m_WebLink.find(link);
+    
+    if (it != m_WebLink.end())
+    {
+        it->second.Visited = true;
+        if (it->second.WebLink[0] == '_')
+        {
+            std::string sURLNew = ".openurl " + it->second.WebLink;
+            CPacketASCIISpeechRequest packet(sURLNew.c_str(), ST_NORMAL, 0x0003, 0x03E4);
+            packet.Send();
+            bRetValue = true;
+        }
+        else
+        {
+            g_Orion.GoToWebLink(it->second.WebLink);
+        }
+    }
+    
+    return bRetValue;
+}
+#else
 void CFontsManager::GoToWebLink(uint16_t link)
 {
     DEBUG_TRACE_FUNCTION;
     WEBLINK_MAP::iterator it = m_WebLink.find(link);
-
+    
     if (it != m_WebLink.end())
     {
         it->second.Visited = true;
         g_Orion.GoToWebLink(it->second.WebLink);
     }
 }
+#endif
 
 int CFontsManager::GetFontOffsetY(uint8_t font, uint8_t index)
 {

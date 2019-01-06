@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // Copyright (C) August 2016 Hotride
 
 #pragma once
@@ -159,7 +159,11 @@ public:
 
     bool LoadFonts();
     bool UnicodeFontExists(uint8_t font);
+#ifdef ENDOR
+    bool GoToWebLink(uint16_t link);
+#else
     void GoToWebLink(uint16_t link);
+#endif
 
     inline bool IsPrintASCII(uint8_t index) { return (m_FontIndex[index] != 0xFF); }
     int GetFontOffsetY(uint8_t font, uint8_t index);

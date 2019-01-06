@@ -149,7 +149,15 @@ void CGumpGeneric::GUMP_BUTTON_EVENT_C
 void CGumpGeneric::GUMP_DIRECT_HTML_LINK_EVENT_C
 {
     DEBUG_TRACE_FUNCTION;
+    
+#ifdef ENDOR
+    if (g_FontManager.GoToWebLink(link))
+    {
+        this->RemoveMark = true;
+    }
+#else
     g_FontManager.GoToWebLink(link);
+#endif
 }
 
 bool CGumpGeneric::OnLeftMouseButtonDoubleClick()
