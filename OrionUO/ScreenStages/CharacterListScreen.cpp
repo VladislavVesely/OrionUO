@@ -67,7 +67,11 @@ void CCharacterListScreen::ProcessSmoothAction(uint8_t action)
     }
     else if (action == ID_SMOOTH_CLS_GO_SCREEN_PROFESSION_SELECT)
     {
+#ifdef ENDOR
+        g_Orion.InitScreen(GS_CREATE);
+#else
         g_Orion.InitScreen(GS_PROFESSION_SELECT);
+#endif
     }
     else if (action == ID_SMOOTH_CLS_GO_SCREEN_DELETE)
     {

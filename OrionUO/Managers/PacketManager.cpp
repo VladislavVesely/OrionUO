@@ -818,7 +818,6 @@ PACKET_HANDLER(ResendCharacterList)
     }
 
     g_CharacterList.Clear();
-    g_CharacterList.Count = numSlots;
 
     int autoPos = -1;
     bool autoLogin = g_MainScreen.m_AutoLogin->Checked;
@@ -831,7 +830,7 @@ PACKET_HANDLER(ResendCharacterList)
     else
     {
         int selectedPos = -1;
-        for (int i = 0; i < numSlots; i++)
+        for (int i = 0; i < g_CharacterList.Count; i++)
         {
             string name = ReadString(30);
             Move(30);
@@ -885,7 +884,11 @@ PACKET_HANDLER(ResendCharacterList)
 
     if (!haveCharacter)
     {
+#ifdef ENDOR
+        g_Orion.InitScreen(GS_CREATE);
+#else
         g_Orion.InitScreen(GS_PROFESSION_SELECT);
+#endif
     }
 }
 

@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // Copyright (C) August 2016 Hotride
 
 #include "../Config.h"
@@ -62,6 +62,76 @@ CPacketSecondLogin::CPacketSecondLogin()
 CPacketCreateCharacter::CPacketCreateCharacter(const string &name)
     : CPacket(104)
 {
+#ifdef ENDOR
+    //SEX
+    uint sex = (uint8_t)g_CreateCharacterManager.GetFemale();
+
+    uint slot = 0;
+    for (int i = 0; i < 5; ++i)
+    {
+        if (g_CharacterList.GetName(i).length())
+            ++slot;
+        else
+            break;
+    }
+    
+    // Based on http://uo.torfo.org/packetguide/
+    
+    //  BYTE cmd
+    WriteUInt8(0x00);
+    //  BYTE[4] pattern1 (0xedededed)
+    WriteUInt32BE(0xEDEDEDED);
+    //  BYTE[4] pattern2 (0xffffffff)
+    WriteUInt32BE(0xffffffff);
+    //  BYTE pattern3 (0x00)
+    WriteUInt8(0x00);
+    //  BYTE[30] char name
+    WriteString(name.c_str(), 30, false);
+    //  BYTE[30] char password
+    WriteString("", 30, false);
+    //  BYTE sex (0=male, 1=female)
+    WriteUInt8(sex);
+    //  BYTE str
+    WriteUInt8(0x14);
+    //  BYTE dex
+    WriteUInt8(0x14);
+    //  BYTE int
+    WriteUInt8(0x19);
+    //  BYTE skill1
+    WriteUInt8(0x01);
+    //  BYTE skill1value
+    WriteUInt8(0x21);
+    //  BYTE skill2
+    WriteUInt8(0x02);
+    //  BYTE skill2value
+    WriteUInt8(0x21);
+    //  BYTE skill3
+    WriteUInt8(0x03);
+    //  BYTE skill3value
+    WriteUInt8(0x22);
+    //  BYTE[2] skinColor
+    WriteUInt16BE(g_CreateCharacterManager.SkinTone);
+    //  BYTE[2] hairStyle
+    WriteUInt16BE(g_CreateCharacterManager.GetHair(g_CreateCharacterManager.HairStyle).GraphicID);
+    //  BYTE[2] hairColor
+    WriteUInt16BE(g_CreateCharacterManager.HairColor);
+    //  BYTE[2] facial hair
+    WriteUInt16BE(g_CreateCharacterManager.GetBeard(g_CreateCharacterManager.BeardStyle).GraphicID);
+    //  BYTE[2] facial hair color
+    WriteUInt16BE(g_CreateCharacterManager.BeardColor);
+    //  BYTE[2] location # from starting list
+    WriteUInt16BE(0x01); //koho zajma lokace...
+    //  BYTE[2] unknown1
+    WriteUInt16BE(0x0000);
+    //  BYTE[2] slot
+    WriteUInt16BE(slot);
+    //  BYTE[4] clientIP
+    WriteDataBE(g_ConnectionManager.GetClientIP(), 4);
+    //  BYTE[2] shirt color
+    WriteUInt16BE(g_CreateCharacterManager.ShirtColor);
+    //  BYTE[2] pants color
+    WriteUInt16BE(g_CreateCharacterManager.PantsColor);
+#else
     int skillsCount = 3;
     uint32_t packetID = 0x00;
 
@@ -195,6 +265,7 @@ CPacketCreateCharacter::CPacketCreateCharacter(const string &name)
     WriteDataBE(g_ConnectionManager.GetClientIP(), 4);
     WriteUInt16BE(g_CreateCharacterManager.ShirtColor);
     WriteUInt16BE(g_CreateCharacterManager.PantsColor);
+#endif
 }
 
 CPacketDeleteCharacter::CPacketDeleteCharacter(int charIndex)

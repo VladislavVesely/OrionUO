@@ -35,6 +35,12 @@ else()
     add_definitions(-DUSE_TIMERTHREAD=0)
 endif()
 
+if(SHARD_ENDOR)
+    add_definitions(-DENDOR=1)
+else()
+    add_definitions(-DENDOR =0)
+endif()
+
 if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
   # enable the latest C++ standard feature set,
   # and also disable MSVC specific extensions

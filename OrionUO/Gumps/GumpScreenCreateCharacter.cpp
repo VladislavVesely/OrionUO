@@ -539,8 +539,11 @@ void CGumpScreenCreateCharacter::GUMP_BUTTON_EVENT_C
         }
         else
         {
-            g_CreateCharacterScreen.CreateSmoothAction(
-                CCreateCharacterScreen::ID_SMOOTH_CCS_GO_SCREEN_SELECT_TOWN);
+#ifdef ENDOR
+            g_SelectTownScreen.CreateSmoothAction(CSelectTownScreen::ID_SMOOTH_STS_GO_SCREEN_GAME_CONNECT);
+#else
+            g_CreateCharacterScreen.CreateSmoothAction(CCreateCharacterScreen::ID_SMOOTH_CCS_GO_SCREEN_SELECT_TOWN);
+#endif
         }
     }
     else if (serial == ID_CCS_FEMALE_BUTTON)

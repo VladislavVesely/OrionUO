@@ -88,6 +88,9 @@ void CConnectionScreen::ProcessSmoothAction(uint8_t action)
     else if (action == ID_SMOOTH_CS_SEND_DELETE)
     {
         CPacketDeleteCharacter(g_CharacterList.Selected).Send();
+#ifdef ENDOR
+        g_Orion.InitScreen(GS_MAIN);
+#endif
     }
 }
 
