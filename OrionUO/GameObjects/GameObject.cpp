@@ -1,7 +1,9 @@
 // MIT License
 // Copyright (C) August 2016 Hotride
 
+#include "GameObject.h"
 #include <SDL_timer.h>
+#include "Config.h"
 
 CGameObject::CGameObject(int serial)
     : CRenderStaticObject(ROT_GAME_OBJECT, serial, 0, 0, 0, 0, 0)
@@ -74,7 +76,7 @@ void CGameObject::SetName(const string &newName)
             g_OrionWindow.SetTitle(title);
         }
 
-        PLUGIN_EVENT(UOMSG_SET_PLAYER_NAME, newName.c_str(), nullptr);
+        PLUGIN_EVENT(UOMSG_SET_PLAYER_NAME, newName.c_str());
     }
 
     m_Name = newName;
@@ -377,25 +379,21 @@ void CGameObject::ClearNotOpenedItems()
 bool CGameObject::Poisoned()
 {
     DEBUG_TRACE_FUNCTION;
-    if (g_PacketManager.GetClientVersion() >= CV_7000)
+    if (g_Config.ClientVersion >= CV_7000)
     {
         return SA_Poisoned;
     }
-    {
-        return (m_Flags & 0x04) != 0;
-    }
+    return (m_Flags & 0x04) != 0;
 }
 
 bool CGameObject::Flying()
 {
     DEBUG_TRACE_FUNCTION;
-    if (g_PacketManager.GetClientVersion() >= CV_7000)
+    if (g_Config.ClientVersion >= CV_7000)
     {
         return (m_Flags & 0x04) != 0;
     }
-    {
-        return false;
-    }
+    return false;
 }
 
 int CGameObject::IsGold(uint16_t graphic)
@@ -406,7 +404,7 @@ int CGameObject::IsGold(uint16_t graphic)
         case 0x0EED:
             return 1;
         /*case 0x0EEA:
-			return 2;*/
+            return 2;*/
         case 0x0EF0:
             return 3;
         default:
@@ -646,7 +644,6 @@ CGameObject *CGameObject::GetTopObject()
     {
         obj = g_World->FindWorldObject(obj->Container);
     }
-
     return obj;
 }
 
@@ -667,11 +664,9 @@ CGameItem *CGameObject::FindLayer(int layer)
 bool CGameObject::Caller()
 {
     DEBUG_TRACE_FUNCTION;
-    if (g_PacketManager.GetClientVersion() >= CV_7000)
+    if (g_Config.ClientVersion >= CV_7000)
     {
         return pvpCaller;
     }
-    {
-        return false;
-    }
+    return false;
 }

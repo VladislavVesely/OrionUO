@@ -1,6 +1,8 @@
 ﻿// MIT License
 // Copyright (C) September 2016 Hotride
 
+#include "PluginManager.h"
+
 #if defined(ORION_WINDOWS)
 #include <Windows.h>
 #else
@@ -8,12 +10,16 @@
 #define __cdecl
 #endif
 
+#include "../Config.h"
+
 CPluginManager g_PluginManager;
 
 bool __cdecl PluginRecvFunction(uint8_t *buf, size_t size)
 {
     DEBUG_TRACE_FUNCTION;
-    PUSH_EVENT(UOMSG_RECV, buf, size);
+    auto owned = (uint8_t *)malloc(size);
+    memcpy(owned, buf, size);
+    PUSH_EVENT(UOMSG_RECV, owned, size);
     return true;
 }
 
@@ -21,7 +27,9 @@ bool __cdecl PluginSendFunction(uint8_t *buf, size_t size)
 {
     DEBUG_TRACE_FUNCTION;
 
-    PUSH_EVENT(UOMSG_SEND, buf, size);
+    auto owned = (uint8_t *)malloc(size);
+    memcpy(owned, buf, size);
+    PUSH_EVENT(UOMSG_SEND, owned, size);
     uint32_t ticks = g_Ticks;
     g_TotalSendSize += checked_cast<int>(size);
     CPacketInfo &type = g_PacketManager.GetInfo(*buf);
@@ -54,9 +62,9 @@ CPlugin::CPlugin(uint32_t flags)
     DEBUG_TRACE_FUNCTION;
     m_PPS = new PLUGIN_INTERFACE();
     memset(m_PPS, 0, sizeof(PLUGIN_INTERFACE));
-    m_PPS->Handle = g_OrionWindow.Handle; // FIXME: remove direct access to window handle
-    m_PPS->ClientVersion = g_PacketManager.GetClientVersion();
-    m_PPS->ClientFlags = (g_FileManager.UseVerdata ? 0x01 : 0);
+    m_PPS->Handle = g_OrionWindow.Handle;
+    m_PPS->ClientVersion = g_Config.ClientVersion;
+    m_PPS->ClientFlags = (g_Config.UseVerdata ? 0x01 : 0);
 }
 
 CPlugin::~CPlugin()
@@ -73,16 +81,16 @@ CPluginManager::CPluginManager()
 {
 }
 
-uint32_t CPluginManager::WindowProc(WindowHandle wnd, uint32_t msg, void *data1, void *data2)
+uint32_t CPluginManager::OnEvent(uint32_t msg, const void *data)
 {
     DEBUG_TRACE_FUNCTION;
 
     uint32_t result = 0;
     QFOR(plugin, m_Items, CPlugin *)
     {
-        if (plugin->CanWindowProc() && plugin->m_PPS->WindowProc != nullptr)
+        if (plugin->CanEvent() && plugin->m_PPS->OnEvent != nullptr)
         {
-            result = plugin->m_PPS->WindowProc(wnd, msg, data1, data2);
+            result = plugin->m_PPS->OnEvent(msg, data);
         }
     }
     return result;

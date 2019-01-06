@@ -16,7 +16,6 @@ void CApplication::Init()
     DEBUG_TRACE_FUNCTION;
     m_ExePath = fs_path_current();
     m_UOPath = fs_path_current();
-    g_MainScreen.LoadCustomPath();
 }
 
 CApplication::~CApplication()
@@ -90,7 +89,9 @@ int CApplication::Run()
         {
             quit = Wisp::g_WispWindow->OnWindowProc(event);
             if (quit)
+            {
                 break;
+            }
         }
 
         // 2] Run main loop, packets, rendering etc..

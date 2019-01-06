@@ -1,7 +1,9 @@
 // MIT License
 // Copyright (C) August 2016 Hotride
 
-#include "FileSystem.h"
+#include "ConfigManager.h"
+#include "../FileSystem.h"
+#include "../Config.h"
 
 CConfigManager g_ConfigManager;
 CConfigManager g_OptionsConfig;
@@ -49,6 +51,7 @@ enum
     CMKC_NO_DRAW_ROOFS,
     CMKC_HIGHLIGHT_TARGET_BY_TYPE,
     CMKC_AUTO_DISPLAY_WORLD_MAP,
+    CMKC_DISABLE_MACRO_IN_CHAT,
     CMKC_USE_TOOLTIPS,
     CMKC_TOOLTIPS_TEXT_COLOR,
     CMKC_TOOLTIPS_TEXT_FONT,
@@ -184,6 +187,7 @@ static const ConfigEntry s_Keys[] = {
     { CMKC_NO_DRAW_ROOFS, "nodrawroofs" },
     { CMKC_HIGHLIGHT_TARGET_BY_TYPE, "highlighttargetbytype" },
     { CMKC_AUTO_DISPLAY_WORLD_MAP, "autodisplayworldmap" },
+    { CMKC_DISABLE_MACRO_IN_CHAT, "disablemacroinchat" },
     { CMKC_USE_TOOLTIPS, "usetooltips" },
     { CMKC_TOOLTIPS_TEXT_COLOR, "tooltipstextcolor" },
     { CMKC_TOOLTIPS_TEXT_FONT, "tooltipstextfont" },
@@ -315,7 +319,7 @@ void CConfigManager::Init()
     GameWindowX = 0;
     GameWindowY = 0;
 
-    if (g_PacketManager.GetClientVersion() >= CV_70331)
+    if (g_Config.ClientVersion >= CV_70331)
     {
         g_MaxViewRange = MAX_VIEW_RANGE_NEW;
     }
@@ -379,6 +383,7 @@ void CConfigManager::DefaultPage2()
     m_NoDrawRoofs = false;
     HighlightTargetByType = true;
     AutoDisplayWorldMap = false;
+    DisableMacroInChat = false;
     CheckPing = true;
     m_PingTimer = 10;
     CancelNewTargetSystemOnShiftEsc = false;
@@ -1078,6 +1083,7 @@ bool CConfigManager::LoadBin(const os_path &path)
         bool noDrawRoofs = false;
         HighlightTargetByType = true;
         AutoDisplayWorldMap = false;
+        DisableMacroInChat = false;
         CheckPing = true;
         m_PingTimer = 10;
         CancelNewTargetSystemOnShiftEsc = false;
@@ -1702,6 +1708,9 @@ bool CConfigManager::Load(const os_path &path)
                 case CMKC_AUTO_DISPLAY_WORLD_MAP:
                     AutoDisplayWorldMap = ToBool(strings[1]);
                     break;
+                case CMKC_DISABLE_MACRO_IN_CHAT:
+                    DisableMacroInChat = ToBool(strings[1]);
+                    break;
                 case CMKC_CHECK_PING:
                     CheckPing = ToBool(strings[1]);
                     break;
@@ -2099,6 +2108,7 @@ void CConfigManager::Save(const os_path &path)
         writer.WriteBool("NoDrawRoofs", m_NoDrawRoofs);
         writer.WriteBool("HighlightTargetByType", HighlightTargetByType);
         writer.WriteBool("AutoDisplayWorldMap", AutoDisplayWorldMap);
+        writer.WriteBool("DisableMacroInChat", DisableMacroInChat);
         writer.WriteBool("CheckPing", CheckPing);
         writer.WriteInt("PingTimer", m_PingTimer);
         writer.WriteBool("CancelNewTargetSystemOnShiftEsc", CancelNewTargetSystemOnShiftEsc);

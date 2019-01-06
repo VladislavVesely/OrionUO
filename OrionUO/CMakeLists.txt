@@ -17,12 +17,6 @@ else()
   #set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=undefined")
 endif()
 
-if(ORION_DLL_STATIC)
-  add_definitions(-DUSE_ORIONDLL=0)
-else()
-  add_definitions(-DUSE_ORIONDLL=1)
-endif()
-
 if(ORION_WISP)
   add_definitions(-DUSE_WISP=1)
 else()
@@ -348,6 +342,7 @@ set(orion_src
   Sockets.cpp
   OrionMain.cpp
   Platform.cpp
+  Config.cpp
 )
 
 if(ORION_WINDOWS)
@@ -424,9 +419,9 @@ else()
       add_custom_command(TARGET orion POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/liborion.dylib" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
       add_custom_command(TARGET orion_unity POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unity/liborion.dylib" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
     else()
-    add_custom_command(TARGET orion POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/liborion.dysolib" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
-    add_custom_command(TARGET orion_unity POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unity/liborion.so" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
-  endif()
+      add_custom_command(TARGET orion POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/liborion.so" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
+      add_custom_command(TARGET orion_unity POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unity/liborion.so" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
+    endif()
     add_executable(OrionUO OrionApp.cpp)
     target_link_libraries(OrionUO PUBLIC -ldl ${THREAD})
     add_dependencies(orion OrionUO)

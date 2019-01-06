@@ -38,12 +38,13 @@ Or, you can use CMake-GUI to configure and generate the solution. For a step-by-
 $ git clone https://github.com/OrionUO/OrionUO
 $ mkdir build
 $ cd build
-$ cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
+$ cmake -G Ninja ../OrionUO -DCMAKE_BUILD_TYPE=Release
 $ ninja orion -j8
-$ ./OrionUO/OrionUO
+$ cd OrionUO
+$ ./OrionUO
 ```
 
-  > You'll need a `Client.cuo` and a `OrionUO.cfg` in the working directory. Inside `OrionUO.cfg` you can add a line `CustomPath=/path/to/uo/data`, so OrionUO will be able to find your original client data files.
+  > You'll need a `OrionUO.cfg` in the working directory. Please use Orion Launcher to configure the client.
 
 ### MacOSX
 
@@ -63,6 +64,9 @@ $ mkdir build
 $ cd build
 $ cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
 $ ninja orion -j8
+$ cd OrionUO
+$ ./OrionUO
 ```
+  > You'll need a `OrionUO.cfg` in the working directory. Please use Orion Launcher to configure the client.
 
-Then you should have an `orion.app` inside `build/OrionUO`
+Then you should have an `OrionUO` inside `build/OrionUO`

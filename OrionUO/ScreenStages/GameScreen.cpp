@@ -1,8 +1,9 @@
 // MIT License
 // Copyright (C) August 2016 Hotride
 
-#include <SDL_rect.h>
 #include "GameScreen.h"
+#include <SDL_rect.h>
+#include "../Config.h"
 
 CGameScreen g_GameScreen;
 RENDER_VARIABLES_FOR_GAME_WINDOW g_RenderBounds;
@@ -609,9 +610,8 @@ void CGameScreen::AddTileToRenderList(
 
         bool aphaChanged = false;
 
-#if UO_RENDER_LIST_SORT == 1
         int z = obj->GetZ();
-
+#if UO_RENDER_LIST_SORT == 1
         int maxObjectZ = obj->PriorityZ;
 
         CRenderStaticObject *rso = obj->StaticGroupObjectPtr();
@@ -1661,7 +1661,7 @@ void CGameScreen::PrepareContent()
                     g_Orion.OpenStatus(selchar->Serial);
                     g_GeneratedMouseDown = true;
                     g_OrionWindow.EmulateOnLeftMouseButtonDown();
-                    PLUGIN_EVENT(UOMSG_STATUS_REQUEST, selchar->Serial, 0);
+                    PLUGIN_EVENT(UOMSG_STATUS_REQUEST, selchar->Serial);
                 }
             }
         }
@@ -2193,7 +2193,7 @@ void CGameScreen::OnLeftMouseButtonUp()
                 else if (rwo->IsStaticObject() || rwo->IsMultiObject())
                 {
                     STATIC_TILES *st = nullptr;
-                    if (g_PacketManager.GetClientVersion() >= CV_7090 && rwo->IsSurface())
+                    if (g_Config.ClientVersion >= CV_7090 && rwo->IsSurface())
                     {
                         st = ((CRenderStaticObject *)rwo)->GetStaticData();
                     }
@@ -2304,7 +2304,7 @@ void CGameScreen::OnLeftMouseButtonUp()
                                     ->GetW(1020000 + id, true, g_Orion.m_StaticData[id].Name);
                             if (str.length() != 0u)
                             {
-                                if (g_PacketManager.GetClientVersion() >= CV_6000)
+                                if (g_Config.ClientVersion >= CV_6000)
                                 {
                                     g_Orion.CreateUnicodeTextMessage(
                                         TT_CLIENT, 0, 1, 0x03B2, str, rwo);
@@ -2576,7 +2576,7 @@ void CGameScreen::OnKeyDown(const KeyEvent &ev)
 
     const auto key = EvKey(ev);
 #if USE_WISP
-    if (key == KEY_TAB && (ev.lParam & 0x40000000))
+    if (key == KEY_TAB && ((LPARAM)ev.lParam & 0x40000000))
         return;
 #else
     if (key == KEY_TAB && ev.repeat)
@@ -2764,7 +2764,10 @@ void CGameScreen::OnKeyDown(const KeyEvent &ev)
     }
 
     auto macro = g_MacroManager.FindMacro(key, altPressed, ctrlPressed, shiftPressed);
-    if (macro != nullptr)
+    const bool canExecuteMacro =
+        !(g_ConfigManager.DisableMacroInChat && g_EntryPointer == &g_GameConsole &&
+          g_GameConsole.InChat());
+    if (macro != nullptr && canExecuteMacro)
     {
         g_MacroManager.ChangePointer((CMacroObject *)macro->m_Items);
         g_MacroManager.WaitingBandageTarget = false;

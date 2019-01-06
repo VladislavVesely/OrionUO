@@ -2,6 +2,7 @@
 // Copyright (C) August 2016 Hotride
 
 #include "GumpOptions.h"
+#include "../Config.h"
 
 #if USE_WISP
 #define KeyName(x) s_HotkeyText[x & 0xFF]
@@ -289,6 +290,7 @@ enum
     ID_GO_DEFAULT,
     ID_GO_OKAY,
 
+    // Sound and Music Page
     ID_GO_P1_SOUND_ON_OFF,
     ID_GO_P1_MUSIC_ON_OFF,
     ID_GO_P1_PLAY_FOOTSTEP_SOUNDS,
@@ -297,6 +299,7 @@ enum
     ID_GO_P1_MUSIC_VOLUME,
     ID_GO_P1_BACKGROUND_SOUND,
 
+    // Configuration Page
     ID_GO_P2_CLIENT_FPS,
     ID_GO_P2_REDUCE_FPS_UNACTIVE_WINDOW,
     ID_GO_P2_CHARACTERS_ANIMATION_DELAY,
@@ -346,7 +349,7 @@ enum
     ID_GO_P2_NO_DRAW_ROOFS,
     ID_GO_P2_HIGHLIGHT_TARGET_BY_TYPE,
     ID_GO_P2_AUTO_DISPLAY_WORLD_MAP,
-
+    ID_GO_P2_DISABLE_MACRO_IN_CHAT,
     ID_GO_P2_CHECK_PING,
     ID_GO_P2_PING_TIMER,
     ID_GO_P2_CANCEL_NEW_TARGET_SYSTEM_ON_SHIFT_ESC,
@@ -355,17 +358,20 @@ enum
     ID_GO_P2_DEV_MODE_2,
     ID_GO_P2_DEV_MODE_3,
 
+    // Language Page
     ID_GO_P3_USE_TOOLTIP,
     ID_GO_P3_TEXT_COLOR,
     ID_GO_P3_TEXT_FONT,
     ID_GO_P3_DELAY_BEFORE_TOOLTIP,
 
+    // Chat Page
     ID_GO_P4_TEXT_FONT,
     ID_GO_P4_TEXT_COLOR,
 
+    // Macro Options Page
     ID_GO_P5_BUTTON_ADD,
     ID_GO_P5_BUTTON_DELETE,
-    ID_GO_P5_BUTTON_PREVEOUS,
+    ID_GO_P5_BUTTON_PREVIOUS,
     ID_GO_P5_BUTTON_NEXT,
     ID_GO_P5_KEY_BOX,
     ID_GO_P5_BUTTON_SHIFT,
@@ -377,9 +383,7 @@ enum
     ID_GO_P5_RIGHT_BOX,
     ID_GO_P5_EMPTY_BOX,
 
-    ID_GO_P5_MACRO_SELECTION,
-    ID_GO_P5_ACTION_SELECTION,
-
+    // Interface Page
     ID_GO_P6_ENABLE_PATHFINDING,
     ID_GO_P6_HOLD_TAB_FOR_COMBAT,
     ID_GO_P6_OFFSET_INTERFACE_WINDOWS,
@@ -403,6 +407,7 @@ enum
     ID_GO_P6_CHARACTER_BACKPACK_STYLE_POLAR_BEAR,
     ID_GO_P6_CHARACTER_BACKPACK_STYLE_GHOUL_SKIN,
 
+    // Display Page
     ID_GO_P7_SCALE_SPEECH_DURATION,
     ID_GO_P7_SPEECH_COLOR,
     ID_GO_P7_EMOTE_COLOR,
@@ -418,6 +423,7 @@ enum
     ID_GO_P7_GAME_WINDOW_HEIGHT,
     ID_GO_P7_LOCK_GAME_WINDOW_RESIZING,
 
+    // Reputation System Page
     ID_GO_P8_INNOCENT_COLOR,
     ID_GO_P8_FRIENDLY_COLOR,
     ID_GO_P8_SOMEONE_COLOR,
@@ -426,6 +432,7 @@ enum
     ID_GO_P8_MURDERER_COLOR,
     ID_GO_P8_QUERY_CRIMINAL_ACTIONS,
 
+    // Miscellaneous Page
     ID_GO_P9_SHOW_APPROACHING_NAMES,
     ID_GO_P9_USE_CIRCLE_OF_TRANSPARENCY,
     ID_GO_P9_INFORM_STATS,
@@ -434,7 +441,13 @@ enum
     ID_GO_P9_INFORM_SKILLS,
 
     ID_GO_COUNT,
+
+    ID_GO_P5_MACRO_START = 1000,
+    ID_GO_P5_MACRO_SELECTION = 2000,
+    ID_GO_P5_ACTION_SELECTION = 10000,
 };
+
+static_assert(ID_GO_COUNT < ID_GO_P5_MACRO_START, "Options page id overflow");
 
 CGumpOptions::CGumpOptions(short x, short y)
     : CGump(GT_OPTIONS, 0, x, y)
@@ -919,6 +932,11 @@ void CGumpOptions::InitToolTip()
             g_ToolTip.Set(L"Display a world map immediately after entering the world");
             break;
         }
+        case ID_GO_P2_DISABLE_MACRO_IN_CHAT:
+        {
+            g_ToolTip.Set(L"Disables macro use when chat is active");
+            break;
+        }
         case ID_GO_P2_CHECK_PING:
         {
             g_ToolTip.Set(L"Send ping requests in game");
@@ -990,14 +1008,14 @@ void CGumpOptions::InitToolTip()
             g_ToolTip.Set(L"Delete current macro");
             break;
         }
-        case ID_GO_P5_BUTTON_PREVEOUS:
+        case ID_GO_P5_BUTTON_PREVIOUS:
         {
-            g_ToolTip.Set(L"Seek to previous macro");
+            g_ToolTip.Set(L"Go to previous macro");
             break;
         }
         case ID_GO_P5_BUTTON_NEXT:
         {
-            g_ToolTip.Set(L"Seek to next macro");
+            g_ToolTip.Set(L"Go to next macro");
             break;
         }
         case ID_GO_P5_KEY_BOX:
@@ -1007,17 +1025,17 @@ void CGumpOptions::InitToolTip()
         }
         case ID_GO_P5_BUTTON_SHIFT:
         {
-            g_ToolTip.Set(L"Macro running if only shift key pressed");
+            g_ToolTip.Set(L"Run macro if shift is pressed");
             break;
         }
         case ID_GO_P5_BUTTON_ALT:
         {
-            g_ToolTip.Set(L"Macro running if only alt key pressed");
+            g_ToolTip.Set(L"Run macro if alt is pressed");
             break;
         }
         case ID_GO_P5_BUTTON_CTRL:
         {
-            g_ToolTip.Set(L"Macro running if only ctrl key pressed");
+            g_ToolTip.Set(L"Run macro if ctrl is pressed");
             break;
         }
         case ID_GO_P5_BUTTON_UP:
@@ -1689,6 +1707,12 @@ void CGumpOptions::DrawPage2()
         0, L"Display a world map immediately after entering the world", g_OptionsTextColor);
 
     checkbox = (CGUICheckbox *)html->Add(
+        new CGUICheckbox(ID_GO_P2_DISABLE_MACRO_IN_CHAT, 0x00D2, 0x00D3, 0x00D2, 0, 880));
+    checkbox->Checked = g_OptionsConfig.DisableMacroInChat;
+    checkbox->SetTextParameters(
+        0, L"Disables macro activation when chat is active", g_OptionsTextColor);
+
+    checkbox = (CGUICheckbox *)html->Add(
         new CGUICheckbox(ID_GO_P2_CHECK_PING, 0x00D2, 0x00D3, 0x00D2, 0, 900));
     checkbox->Checked = g_OptionsConfig.CheckPing;
     checkbox->SetTextParameters(0, L"Check ping in game, timer in seconds:", g_OptionsTextColor);
@@ -2148,7 +2172,7 @@ void CGumpOptions::RedrawMacroData()
         while (obj != nullptr && macroCount < maxMacroDraw)
         {
             CGUIComboBox *combobox = (CGUIComboBox *)m_MacroDataBox->Add(new CGUIComboBox(
-                ID_GO_P5_MACRO_SELECTION + (macroCount * 1000),
+                ID_GO_P5_MACRO_SELECTION + (macroCount * ID_GO_P5_MACRO_START),
                 0x098D,
                 true,
                 0x09B5,
@@ -2171,7 +2195,7 @@ void CGumpOptions::RedrawMacroData()
                 CMacro::GetBoundByCode(obj->Code, macroListCount, macroListOffset);
 
                 combobox = (CGUIComboBox *)m_MacroDataBox->Add(new CGUIComboBox(
-                    ID_GO_P5_ACTION_SELECTION + (macroCount * 1000),
+                    ID_GO_P5_ACTION_SELECTION + (macroCount * ID_GO_P5_MACRO_START),
                     0x098E,
                     true,
                     0x09B5,
@@ -2198,10 +2222,14 @@ void CGumpOptions::RedrawMacroData()
                 m_MacroDataBox->Add(new CGUIGumppic(0x098E, 245, y));
                 m_MacroDataBox->Add(new CGUIScissor(true, 0, 0, 251, y + 5, 150, 20));
                 m_MacroDataBox->Add(new CGUIHitBox(
-                    ID_GO_P5_ACTION_SELECTION + (macroCount * 1000), 251, y + 5, 150, 20));
+                    ID_GO_P5_ACTION_SELECTION + (macroCount * ID_GO_P5_MACRO_START),
+                    251,
+                    y + 5,
+                    150,
+                    20));
 
                 CGUITextEntry *entry = (CGUITextEntry *)m_MacroDataBox->Add(new CGUITextEntry(
-                    ID_GO_P5_ACTION_SELECTION + (macroCount * 1000),
+                    ID_GO_P5_ACTION_SELECTION + (macroCount * ID_GO_P5_MACRO_START),
                     0x0386,
                     0x0386,
                     0x0386,
@@ -2243,7 +2271,7 @@ void CGumpOptions::DrawPage5()
         (CGUIButton *)Add(new CGUIButton(ID_GO_P5_BUTTON_DELETE, 0x099F, 0x09A1, 0x09A0, 205, 60));
     button->ProcessPressedState = true;
     button = (CGUIButton *)Add(
-        new CGUIButton(ID_GO_P5_BUTTON_PREVEOUS, 0x09A2, 0x09A4, 0x09A3, 273, 60));
+        new CGUIButton(ID_GO_P5_BUTTON_PREVIOUS, 0x09A2, 0x09A4, 0x09A3, 273, 60));
     button->ProcessPressedState = true;
     button =
         (CGUIButton *)Add(new CGUIButton(ID_GO_P5_BUTTON_NEXT, 0x09A5, 0x09A7, 0x09A6, 357, 60));
@@ -2617,7 +2645,7 @@ void CGumpOptions::DrawPage7()
     checkbox->Checked = g_OptionsConfig.ColoredLighting;
     checkbox->SetTextParameters(0, L"Colored Lighting", g_OptionsTextColor);
 
-    if (g_PacketManager.GetClientVersion() >= CV_6000)
+    if (g_Config.ClientVersion >= CV_6000)
     {
         Add(new CGUIButton(ID_GO_P7_GUILD_MESSAGE_COLOR, 0x00D4, 0x00D4, 0x00D4, 354, 204));
 
@@ -3271,7 +3299,7 @@ void CGumpOptions::GUMP_BUTTON_EVENT_C
                         m_LastChangeMacroTime = g_Ticks + CHANGE_MACRO_DELAY;
                     }
                 }
-                else if (serial == ID_GO_P5_BUTTON_PREVEOUS) //Preveous button
+                else if (serial == ID_GO_P5_BUTTON_PREVIOUS) //Previous button
                 {
                     if (m_MacroPointer->m_Prev != nullptr && m_LastChangeMacroTime < g_Ticks)
                     {
@@ -3504,6 +3532,10 @@ void CGumpOptions::GUMP_CHECKBOX_EVENT_C
             else if (serial == ID_GO_P2_AUTO_DISPLAY_WORLD_MAP)
             {
                 g_OptionsConfig.AutoDisplayWorldMap = state;
+            }
+            else if (serial == ID_GO_P2_DISABLE_MACRO_IN_CHAT)
+            {
+                g_OptionsConfig.DisableMacroInChat = state;
             }
             else if (serial == ID_GO_P2_CHECK_PING)
             {
@@ -3957,7 +3989,6 @@ void CGumpOptions::GUMP_COMBOBOX_SELECTION_EVENT_C
     DEBUG_TRACE_FUNCTION;
     bool isAction = false;
     int index = serial - ID_GO_P5_MACRO_SELECTION;
-
     if (serial >= ID_GO_P5_ACTION_SELECTION)
     {
         isAction = true;
@@ -3965,10 +3996,9 @@ void CGumpOptions::GUMP_COMBOBOX_SELECTION_EVENT_C
     }
 
     int macroIndex = 0;
-
-    while (index >= 1000)
+    while (index >= ID_GO_P5_MACRO_START)
     {
-        index -= 1000;
+        index -= ID_GO_P5_MACRO_START;
         macroIndex++;
     }
 
@@ -4090,7 +4120,8 @@ void CGumpOptions::OnTextInput(const TextEvent &ev)
                 while (obj != nullptr && macroCount < maxMacroDraw)
                 {
                     if (obj->HasSubMenu == 2 &&
-                        entry->Serial == ID_GO_P5_ACTION_SELECTION + (macroCount * 1000))
+                        entry->Serial ==
+                            ID_GO_P5_ACTION_SELECTION + (macroCount * ID_GO_P5_MACRO_START))
                     {
                         break;
                     }
@@ -4196,7 +4227,8 @@ void CGumpOptions::OnKeyDown(const KeyEvent &ev)
                         while (obj != nullptr && macroCount < maxMacroDraw)
                         {
                             if (obj->HasSubMenu == 2 &&
-                                entry->Serial == ID_GO_P5_ACTION_SELECTION + (macroCount * 1000))
+                                entry->Serial ==
+                                    ID_GO_P5_ACTION_SELECTION + (macroCount * ID_GO_P5_MACRO_START))
                             {
                                 break;
                             }
@@ -4289,6 +4321,7 @@ void CGumpOptions::ApplyPageChanges()
             g_ConfigManager.SetNoDrawRoofs(g_OptionsConfig.GetNoDrawRoofs());
             g_ConfigManager.HighlightTargetByType = g_OptionsConfig.HighlightTargetByType;
             g_ConfigManager.AutoDisplayWorldMap = g_OptionsConfig.AutoDisplayWorldMap;
+            g_ConfigManager.DisableMacroInChat = g_OptionsConfig.DisableMacroInChat;
             g_ConfigManager.CheckPing = g_OptionsConfig.CheckPing;
             g_ConfigManager.SetPingTimer(g_OptionsConfig.GetPingTimer());
             g_ConfigManager.CancelNewTargetSystemOnShiftEsc =
@@ -4429,7 +4462,7 @@ void CGumpOptions::ApplyPageChanges()
             g_OptionsConfig.GameWindowHeight = curY;
             g_ConfigManager.GameWindowHeight = curY;
 
-            if (g_PacketManager.GetClientVersion() >= CV_200)
+            if (g_Config.ClientVersion >= CV_200)
             {
                 CPacketGameWindowSize().Send();
             }

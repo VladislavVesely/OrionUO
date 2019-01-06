@@ -1,9 +1,13 @@
 // MIT License
 // Copyright (C) August 2016 Hotride
 
+#include "AnimationManager.h"
+#include "../Constants.h"
+#include "../Config.h"
+
 CAnimationManager g_AnimationManager;
 
-const int CAnimationManager::m_UsedLayers[8][USED_LAYER_COUNT] = {
+const int CAnimationManager::m_UsedLayers[MAX_LAYER_DIRECTIONS][USED_LAYER_COUNT] = {
     {
         //dir 0
         OL_SHIRT, OL_PANTS, OL_SHOES,    OL_LEGS,   OL_TORSO,  OL_RING,   OL_TALISMAN, OL_BRACELET,
@@ -81,7 +85,7 @@ void CAnimationManager::UpdateAnimationAddressTable()
         {
             CTextureAnimationGroup &group = index.m_Groups[g];
 
-            for (int d = 0; d < 5; d++)
+            for (int d = 0; d < MAX_MOBILE_DIRECTIONS; d++)
             {
                 CTextureAnimationDirection &direction = group.m_Direction[d];
                 bool replace = (direction.FileIndex >= 4);
@@ -186,14 +190,14 @@ void CAnimationManager::Load(uint32_t *verdata)
         for (int j = 0; j < count; j++)
         {
             CTextureAnimationGroup &group = index.m_Groups[j];
-            int offset = (int)j * 5;
+            int offset = (int)j * MAX_MOBILE_DIRECTIONS;
 
-            for (int d = 0; d < 5; d++)
+            for (int d = 0; d < MAX_MOBILE_DIRECTIONS; d++)
             {
                 CTextureAnimationDirection &direction = group.m_Direction[d];
 
-                PANIM_IDX_BLOCK aidx =
-                    (PANIM_IDX_BLOCK)(address + ((offset + d) * sizeof(ANIM_IDX_BLOCK)));
+                ANIM_IDX_BLOCK *aidx =
+                    (ANIM_IDX_BLOCK *)(address + ((offset + d) * sizeof(ANIM_IDX_BLOCK)));
 
                 if ((size_t)aidx >= maxAddress)
                 {
@@ -217,8 +221,8 @@ void CAnimationManager::Load(uint32_t *verdata)
 
         for (int j = 0; j < dataCount; j++)
         {
-            PVERDATA_HEADER vh =
-                (PVERDATA_HEADER)((size_t)verdata + 4 + (j * sizeof(VERDATA_HEADER)));
+            VERDATA_HEADER *vh =
+                (VERDATA_HEADER *)((size_t)verdata + 4 + (j * sizeof(VERDATA_HEADER)));
 
             if (vh->FileID == 0x06) //Anim
             {
@@ -259,8 +263,8 @@ void CAnimationManager::Load(uint32_t *verdata)
                     id += 400;
                 }
 
-                group = offset / 5;
-                dir = offset % 5;
+                group = offset / MAX_MOBILE_DIRECTIONS;
+                dir = offset % MAX_MOBILE_DIRECTIONS;
 
                 if (id >= MAX_ANIMATIONS_DATA_INDEX_COUNT)
                 {
@@ -296,7 +300,7 @@ void CAnimationManager::Load(uint32_t *verdata)
 void CAnimationManager::InitIndexReplaces(uint32_t *verdata)
 {
     DEBUG_TRACE_FUNCTION;
-    if (g_PacketManager.GetClientVersion() >= CV_500A)
+    if (g_Config.ClientVersion >= CV_500A)
     {
         static const string typeNames[5] = {
             "monster", "sea_monster", "animal", "human", "equipment"
@@ -364,7 +368,7 @@ void CAnimationManager::InitIndexReplaces(uint32_t *verdata)
         }
     }
 
-    if (g_PacketManager.GetClientVersion() < CV_305D)
+    if (g_Config.ClientVersion < CV_305D)
     { //CV_204C
         return;
     }
@@ -584,7 +588,7 @@ void CAnimationManager::InitIndexReplaces(uint32_t *verdata)
                     CIndexAnimation &dataIndex = m_DataIndex[index];
                     dataIndex.MountedHeightOffset = mountedHeightOffset;
 
-                    if (g_PacketManager.GetClientVersion() < CV_500A || groupType == AGT_UNKNOWN)
+                    if (g_Config.ClientVersion < CV_500A || groupType == AGT_UNKNOWN)
                     {
                         if (realAnimID >= 200)
                         {
@@ -637,14 +641,15 @@ void CAnimationManager::InitIndexReplaces(uint32_t *verdata)
                     for (int j = 0; j < count; j++)
                     {
                         CTextureAnimationGroup &group = dataIndex.m_Groups[j];
-                        int offset = (int)j * 5;
+                        int offset = (int)j * MAX_MOBILE_DIRECTIONS;
 
-                        for (int d = 0; d < 5; d++)
+                        for (int d = 0; d < MAX_MOBILE_DIRECTIONS; d++)
                         {
                             CTextureAnimationDirection &direction = group.m_Direction[d];
 
-                            PANIM_IDX_BLOCK aidx = (PANIM_IDX_BLOCK)(
-                                address + ((offset + d) * sizeof(ANIM_IDX_BLOCK)));
+                            ANIM_IDX_BLOCK *aidx =
+                                (ANIM_IDX_BLOCK
+                                     *)(address + ((offset + d) * sizeof(ANIM_IDX_BLOCK)));
 
                             if ((size_t)aidx >= maxAddress)
                             {
@@ -735,7 +740,7 @@ void CAnimationManager::InitIndexReplaces(uint32_t *verdata)
                 CTextureAnimationGroup &group = dataIndex.m_Groups[j];
                 CTextureAnimationGroup &newGroup = checkDataIndex.m_Groups[j];
 
-                for (int d = 0; d < 5; d++)
+                for (int d = 0; d < MAX_MOBILE_DIRECTIONS; d++)
                 {
                     CTextureAnimationDirection &direction = group.m_Direction[d];
                     CTextureAnimationDirection &newDirection = newGroup.m_Direction[d];
@@ -835,7 +840,7 @@ void CAnimationManager::InitIndexReplaces(uint32_t *verdata)
                 CTextureAnimationGroup &group = dataIndex.m_Groups[ignoreGroups[j]];
                 CTextureAnimationGroup &newGroup = checkDataIndex.m_Groups[ignoreGroups[j]];
 
-                for (int d = 0; d < 5; d++)
+                for (int d = 0; d < MAX_MOBILE_DIRECTIONS; d++)
                 {
                     CTextureAnimationDirection &direction = group.m_Direction[d];
                     CTextureAnimationDirection &newDirection = newGroup.m_Direction[d];
@@ -1086,9 +1091,10 @@ bool CAnimationManager::TestPixels(
 
     if (id >= MAX_ANIMATIONS_DATA_INDEX_COUNT)
     {
-        return nullptr != nullptr;
+        return false;
     }
 
+    assert(Direction < MAX_MOBILE_DIRECTIONS && "Out-of-bound access");
     CTextureAnimationDirection &direction =
         m_DataIndex[id].m_Groups[AnimGroup].m_Direction[Direction];
     AnimID = id;
@@ -1165,6 +1171,7 @@ void CAnimationManager::Draw(
         return;
     }
 
+    assert(Direction < MAX_MOBILE_DIRECTIONS && "Out-of-bound access");
     CTextureAnimationDirection &direction =
         m_DataIndex[id].m_Groups[AnimGroup].m_Direction[Direction];
     AnimID = id;
@@ -1799,6 +1806,7 @@ void CAnimationManager::DrawCharacter(CGameCharacter *obj, int x, int y)
 
         if (id < MAX_ANIMATIONS_DATA_INDEX_COUNT)
         {
+            assert(Direction < MAX_MOBILE_DIRECTIONS && "Out-of-bound access");
             CTextureAnimationDirection &direction =
                 m_DataIndex[id].m_Groups[AnimGroup].m_Direction[Direction];
 
@@ -2091,7 +2099,7 @@ ANIMATION_DIMENSIONS CAnimationManager::GetAnimationDimensions(
 
     if (id < MAX_ANIMATIONS_DATA_INDEX_COUNT)
     {
-        if (dir < 5)
+        if (dir < MAX_MOBILE_DIRECTIONS)
         {
             CTextureAnimationDirection &direction =
                 m_DataIndex[id].m_Groups[animGroup].m_Direction[dir];
@@ -2493,6 +2501,7 @@ CAnimationManager::CollectFrameInformation(CGameObject *gameObject, bool checkLa
         {
             for (int l = 0; l < USED_LAYER_COUNT; l++)
             {
+                assert(layerDir < MAX_LAYER_DIRECTIONS && "Out-of-bounds access");
                 goi = obj->FindLayer(m_UsedLayers[layerDir][l]);
 
                 if (goi == nullptr || (goi->AnimID == 0u))
@@ -2533,6 +2542,7 @@ CAnimationManager::CollectFrameInformation(CGameObject *gameObject, bool checkLa
         {
             for (int l = 0; l < USED_LAYER_COUNT; l++)
             {
+                assert(Direction < MAX_LAYER_DIRECTIONS && "Out-of-bounds access");
                 CGameItem *goi = obj->FindLayer(m_UsedLayers[Direction][l]);
 
                 if (goi != nullptr && (goi->AnimID != 0u))

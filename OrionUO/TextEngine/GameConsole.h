@@ -17,7 +17,6 @@ public:
     virtual ~CGameConsole();
 
     static void Send(wstring text, uint16_t defaultColor = 0);
-
     static wstring
     IsSystemCommand(const wchar_t *text, size_t &len, int &member, GAME_CONSOLE_TEXT_TYPE &type);
 
@@ -29,6 +28,7 @@ public:
         TEXT_ALIGN_TYPE align = TS_LEFT,
         uint16_t flags = 0);
 
+    bool InChat() const;
     void Send();
     void SaveConsoleMessage();
     void ChangeConsoleMessage(bool next);

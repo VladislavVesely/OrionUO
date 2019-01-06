@@ -11,7 +11,6 @@ bool __cdecl PluginSendFunction(uint8_t *buf, size_t size);
 class COrion
 {
 public:
-    string ClientVersionText = "2.0.3";
     int TexturesDataCount = 0;
     string m_OverrideServerAddress;
     int m_OverrideServerPort = 0;
@@ -37,7 +36,6 @@ private:
 
     string m_GameServerIP = "";
 
-    bool LoadClientConfig();
     void LoadAutoLoginNames();
     void LoadTiledata(int landSize, int staticsSize);
     void LoadIndexFiles();
@@ -56,8 +54,8 @@ private:
         size_t indexMaxCount,
         const std::function<CIndexObject *(int index)> &getIdxObj,
         size_t address,
-        PBASE_IDX_BLOCK ptr,
-        const std::function<PBASE_IDX_BLOCK()> &getNewPtrValue);
+        BASE_IDX_BLOCK *ptr,
+        const std::function<BASE_IDX_BLOCK *()> &getNewPtrValue);
     void ReadUOPIndexFile(
         size_t indexMaxCount,
         const std::function<CIndexObject *(int index)> &getIdxObj,
@@ -71,7 +69,7 @@ private:
     string DecodeArgumentString(const char *text, int length);
     void ParseCommandLine();
     void LoadPlugin(const os_path &libpath, const string &function, int flags);
-    bool InstallPlugin(dllFunc *initFunc, int flags);
+    bool InstallPlugin(PluginEntry *initFunc, int flags);
     void LoadContainerOffsets();
 
 public:

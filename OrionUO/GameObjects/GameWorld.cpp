@@ -131,7 +131,7 @@ void CGameWorld::ProcessAnimation()
 
                 int currentDelay = delay;
 
-                if (id < MAX_ANIMATIONS_DATA_INDEX_COUNT && dir < 5)
+                if (id < MAX_ANIMATIONS_DATA_INDEX_COUNT && dir < MAX_MOBILE_DIRECTIONS)
                 {
                     CTextureAnimationDirection &direction =
                         g_AnimationManager.m_DataIndex[id].m_Groups[animGroup].m_Direction[dir];
@@ -264,7 +264,7 @@ void CGameWorld::ProcessAnimation()
 
                 g_AnimationManager.GetAnimDirection(dir, mirror);
 
-                if (id < MAX_ANIMATIONS_DATA_INDEX_COUNT && dir < 5)
+                if (id < MAX_ANIMATIONS_DATA_INDEX_COUNT && dir < MAX_MOBILE_DIRECTIONS)
                 {
                     int animGroup = g_AnimationManager.GetDieGroupIndex(id, gi->UsedLayer != 0u);
 
@@ -1086,7 +1086,7 @@ void CGameWorld::UpdatePlayer(
         g_RemoveRangeXY.Y = y;
 
         UOI_PLAYER_XYZ_DATA xyzData = { g_RemoveRangeXY.X, g_RemoveRangeXY.Y, 0 };
-        PLUGIN_EVENT(UOMSG_UPDATE_REMOVE_POS, &xyzData, nullptr);
+        PLUGIN_EVENT(UOMSG_UPDATE_REMOVE_POS, &xyzData);
 
         g_GameScreen.UpdateDrawPos = true;
 

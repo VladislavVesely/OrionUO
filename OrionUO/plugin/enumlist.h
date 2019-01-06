@@ -1,4 +1,5 @@
-﻿// Copyright (C) August 2016 Hotride
+// MIT License
+// Copyright (C) August 2016 Hotride
 
 #pragma once
 
@@ -49,61 +50,74 @@ enum SCAN_MODE_OBJECT
 
 enum EFFECT_TYPE
 {
-    EF_MOVING = 0,     //!Движется
-    EF_LIGHTING,       //!Удар молнией
-    EF_STAY_AT_POS,    //!Стоит на точке
-    EF_STAY_AT_SOURCE, //!Привязан к персонажу
-    EF_DRAG            //!Анимация перемещения предмета
+    EF_MOVING = 0,     // Moving
+    EF_LIGHTING,       // Lightning Strike
+    EF_STAY_AT_POS,    // Standing on position
+    EF_STAY_AT_SOURCE, // Tied to the source
+    EF_DRAG            // Item movement animation
 };
 
 enum CHARACTER_SPEED_TYPE
 {
-    CST_NORMAL = 0,   //!Нормальная скорость перемещения
-    CST_FAST_UNMOUNT, //!Ускорение движения персонажа, если он перемещается без маунта (выставляется скорость сопоставимая с маунтом)
-    CST_CANT_RUN, //!Персонаж может только ходить, не бежать (как на маунте, так и без него)
-    CST_FAST_UNMOUNT_AND_CANT_RUN //!Совокупность предыдущих 2 вариантов (персонаж не может бежать и ускорение только при перемещении без маунта)
+    CST_NORMAL = 0,   // Normal speed
+    CST_FAST_UNMOUNT, // Acceleration of the character's movement when it moves without a mount
+    CST_CANT_RUN,     // Only walk, cannot run with or without a mount
+    CST_FAST_UNMOUNT_AND_CANT_RUN // Combine both previous: char cannot run and accelerate only if without mount
 };
 
 enum ENCRYPTION_TYPE
 {
-    ET_NOCRYPT = 0, //!Без шифрования
-    ET_OLD_BFISH,   //!Старое BlowFish
-    ET_1_25_36, //!Специальное для клиента 1.25.36 (BlowFish, изменен алгоритм логин шифрования)
-    ET_BFISH,   //!Стандартный BlowFish
-    ET_203,  //!Специальное для 2.0.3 клиента (BlowFish + TwoFish без MD5)
-    ET_TFISH //!TwoFish + MD5
+    ET_NOCRYPT = 0,
+    ET_OLD_BFISH,
+    ET_1_25_36, // Client specific: 1.25.36 (BlowFish, login encryption algo changed)
+    ET_BFISH,
+    ET_203,  // Special for client 2.0.3 (BlowFish + TwoFish without MD5)
+    ET_TFISH // TwoFish + MD5
 };
+
+#define VERSION(a, b, c, d)                                                                        \
+    (((a & 0xff) << 24) | ((b & 0xff) << 16) | ((c & 0xff) << 8) | (d & 0xff))
 
 enum CLIENT_VERSION
 {
-    CV_OLD = 0, //Предшествующие клиенту 2.0.0, Остальные по логике, исходя из названия
-    CV_200,     //Отправляется пакет с габаритами экрана
-    //CV_204C,		//Использование *.def файлов
-    CV_305D, //Использование клилоков, количество слотов в списке персонажей равно количеству персонажей
-    CV_306E, //Добавлен пакет с типом клиента (0xBF subcmd 0x0F), использование mp3 вместо midi
-    CV_308D, //Добавлен параметр Maximum Stats в статусбар
-    CV_308J, //Добавлен параметр Followers в статусбар
-    CV_308Z, //Добавлены классы paladin, necromancer; custom houses, 5 resistances, изменено окно выбора профессии, убрана галочка Save Password
-    CV_400B, //Удаление тултипов
-    CV_405A, //Добавлены классы ninja, samurai
-    CV_4011D, //Изменение окна создания персонажа. Добавлена расса elves
-    CV_500A, //Кнопки папердолла заменены: Journal -> Quests; Chat -> Guild, использование Mega Cliloc, Убрана загрузка файла Verdata.mul
-    CV_5020, //Добавлен гамп бафов
-    CV_5090, //
-    CV_6000, //Добавлены цвета гильд/алли чата, игноры чатов. Добавлены опции новой таргет системы, вывод свойств предметов, Object Handles,
-    CV_6013, //
-    CV_6017, //
-    CV_6040, //Увеличилось количество слотов персонажей
-    CV_6060, //
-    CV_60142, //
-    CV_60144, //Изменение окна создания персонажа. Добавлена расса gargoyle
-    CV_7000,  //
-    CV_7090,  //
-    CV_70130, //
-    CV_70160, //
-    CV_70180, //
-    CV_70240, //*.mul -> *.uop
-    CV_70331  //
+    CV_OLD = VERSION(0, 0, 0, 0),    // CF_T2A, Standard (<2.0.0)
+    CV_200 = VERSION(2, 0, 0, 0),    // CF_RE, Packet sent with screen dimensions
+    CV_200X = VERSION(2, 0, 0, 'x'), // Special Crypto keys
+    //CV_204C, // Introduced *.def files
+    CV_300 = VERSION(3, 0, 0, 0), // CF_TD
+    // Using cliloc. Numer of slots in list of characters is equal to number of characters
+    CV_305D = VERSION(3, 0, 5, 'd'),
+    // Introduced packet with client type (0xBF subcmd 0x0F), uses mp3 instead of midi
+    CV_306E = VERSION(3, 0, 6, 'e'),
+    CV_308 = VERSION(3, 0, 8, 0),    // CF_LBR
+    CV_308D = VERSION(3, 0, 8, 'd'), // Added "Maximum Stats" to the statusbar
+    CV_308J = VERSION(3, 0, 8, 'j'), // Added "Followers" to the statsubar
+    // Added classes: paladin, necromancer; custom houses, 5 resistances, changed professions choice screen, removed "Save Password" checkbox
+    CV_308Z = VERSION(3, 0, 8, 'z'),
+    CV_400B = VERSION(4, 0, 0, 'b'),   // Removed tooltips
+    CV_405A = VERSION(4, 0, 5, 'a'),   // CF_SE, Added classes: ninja, samurai
+    CV_4011D = VERSION(4, 0, 11, 'd'), // Changed the character creation screen. Added elf race.
+    // Paperdoll buttons replaced: Journal->Quests; Chat->Guild. Using Mega Cliloc, removed loading of Verdata.mul
+    CV_500A = VERSION(5, 0, 0, 'a'),
+    CV_5020 = VERSION(5, 0, 2, 0), // Added buffs gump
+    CV_5090 = VERSION(5, 0, 9, 0), //
+    // Added colors guild / alli chat, chat ignore. Options for a new system target, diplaying object properties, object handles
+    CV_6000 = VERSION(6, 0, 0, 0),
+    CV_6013 = VERSION(6, 0, 1, 3),   //
+    CV_6017 = VERSION(6, 0, 1, 7),   //
+    CV_6040 = VERSION(6, 0, 4, 0),   // Increased number of character slots
+    CV_6060 = VERSION(6, 0, 6, 0),   //
+    CV_60142 = VERSION(6, 0, 14, 2), //
+    // CF_SA, Changed the character creation screen. Added gargoyle race
+    CV_60144 = VERSION(6, 0, 14, 4),
+    CV_7000 = VERSION(7, 0, 0, 0),   //
+    CV_7090 = VERSION(7, 0, 9, 0),   //
+    CV_70130 = VERSION(7, 0, 13, 0), //
+    CV_70160 = VERSION(7, 0, 16, 0), //
+    CV_70180 = VERSION(7, 0, 18, 0), //
+    CV_70240 = VERSION(7, 0, 24, 0), // *.mul -> *.uop
+    CV_70331 = VERSION(7, 0, 33, 1), //
+    CV_LATEST = CV_70331,
 };
 
 enum CONNECTION_SCREEN_TYPE
@@ -141,7 +155,8 @@ enum CLIENT_FLAG
     CF_SA = 0x20,
     CF_UO3D = 0x40,
     CF_RESERVED = 0x80,
-    CF_3D = 0x100
+    CF_3D = 0x100,
+    CF_UNDEFINED = 0xFFFF,
 };
 
 enum CHARACTER_LIST_FLAG
@@ -423,7 +438,101 @@ enum ORION_COMMAND_TYPE
     OCT_RECONNECT = 110,
     OCT_PLAY_MACRO = 111,
     OCT_MOVE_PAPERDOLL = 112,
-    OCT_USE_ABILITY = 113
+    OCT_USE_ABILITY = 113,
+    OCT_OPEN_DOOR = 114
+};
+
+enum VALUE_KEY_INT
+{
+    VKI_SOUND = 0,
+    VKI_SOUND_VALUE,
+    VKI_MUSIC,
+    VKI_MUSIC_VALUE,
+    VKI_USE_TOOLTIPS,
+    VKI_ALWAYS_RUN,
+    VKI_NEW_TARGET_SYSTEM,
+    VKI_OBJECT_HANDLES,
+    VKI_SCALE_SPEECH_DELAY,
+    VKI_SPEECH_DELAY,
+    VKI_IGNORE_GUILD_MESSAGES,
+    VKI_IGNORE_ALLIANCE_MESSAGES,
+    VKI_DARK_NIGHTS,
+    VKI_COLORED_LIGHTING,
+    VKI_CRIMINAL_ACTIONS_QUERY,
+    VKI_CIRCLETRANS,
+    VKI_CIRCLETRANS_VALUE,
+    VKI_LOCK_RESIZING_GAME_WINDOW,
+    VKI_CLIENT_FPS_VALUE,
+    VKI_USE_SCALING_GAME_WINDOW,
+    VKI_DRAW_STATUS_STATE,
+    VKI_DRAW_STUMPS,
+    VKI_MARKING_CAVES,
+    VKI_NO_VEGETATION,
+    VKI_NO_ANIMATE_FIELDS,
+    VKI_STANDARD_CHARACTERS_DELAY,
+    VKI_STANDARD_ITEMS_DELAY,
+    VKI_LOCK_GUMPS_MOVING,
+    VKI_CONSOLE_NEED_ENTER,
+    VKI_HIDDEN_CHARACTERS_MODE,
+    VKI_HIDDEN_CHARACTERS_ALPHA,
+    VKI_HIDDEN_CHARACTERS_MODE_ONLY_FOR_SELF,
+    VKI_TRANSPARENT_SPELL_ICONS,
+    VKI_SPELL_ICONS_ALPHA,
+    VKI_SKILLS_COUNT,
+    VKI_SKILL_CAN_BE_USED,
+    VKI_STATIC_ART_ADDRESS,
+    VKI_USED_LAYER,
+    VKI_SPELLBOOK_COUNT,
+    VKI_BLOCK_MOVING,
+    VKI_SET_PLAYER_GRAPHIC,
+    VKI_FAST_ROTATION,
+    VKI_IGNORE_STAMINA_CHECK,
+    VKI_LAST_TARGET,
+    VKI_LAST_ATTACK,
+    VKI_NEW_TARGET_SYSTEM_SERIAL,
+    VKI_GET_MAP_SIZE,
+    VKI_GET_MAP_BLOCK_SIZE,
+    VKI_MAP_MUL_ADDRESS,
+    VKI_STATIC_IDX_ADDRESS,
+    VKI_STATIC_MUL_ADDRESS,
+    VKI_MAP_DIFL_ADDRESS,
+    VKI_MAP_DIF_ADDRESS,
+    VKI_STATIC_DIFL_ADDRESS,
+    VKI_STATIC_DIFI_ADDRESS,
+    VKI_STATIC_DIF_ADDRESS,
+    VKI_VERDATA_ADDRESS,
+    VKI_MAP_MUL_SIZE,
+    VKI_STATIC_IDX_SIZE,
+    VKI_STATIC_MUL_SIZE,
+    VKI_MAP_DIFL_SIZE,
+    VKI_MAP_DIF_SIZE,
+    VKI_STATIC_DIFL_SIZE,
+    VKI_STATIC_DIFI_SIZE,
+    VKI_STATIC_DIF_SIZE,
+    VKI_VERDATA_SIZE,
+    VKI_MAP_UOP_ADDRESS,
+    VKI_MAP_UOP_SIZE,
+    VKI_MAP_X_UOP_ADDRESS,
+    VKI_MAP_X_UOP_SIZE,
+    VKI_CLILOC_ENU_ADDRESS,
+    VKI_CLILOC_ENU_SIZE,
+    VKI_GUMP_ART_ADDRESS,
+    VKI_VIEW_RANGE,
+    VKI_SET_PVPCALLER
+};
+
+enum VALUE_KEY_STRING
+{
+    VKS_SKILL_NAME = 0,
+    VKS_SERVER_NAME,
+    VKS_CHARACTER_NAME,
+    VKS_SPELLBOOK_1_SPELL_NAME,
+    VKS_SPELLBOOK_2_SPELL_NAME,
+    VKS_SPELLBOOK_3_SPELL_NAME,
+    VKS_SPELLBOOK_4_SPELL_NAME,
+    VKS_SPELLBOOK_5_SPELL_NAME,
+    VKS_SPELLBOOK_6_SPELL_NAME,
+    VKS_SPELLBOOK_7_SPELL_NAME
 };
 
 enum ORION_FILE_INDEX
@@ -575,6 +684,13 @@ enum TEXT_TYPE
     TT_CLIENT = 0,
     TT_SYSTEM,
     TT_OBJECT
+};
+
+enum TEXT_ALIGN_TYPE
+{
+    TS_LEFT = 0,
+    TS_CENTER,
+    TS_RIGHT
 };
 
 enum HTML_TAG_TYPE
@@ -906,7 +1022,7 @@ enum MACRO_CODE
     MC_TOGGLE_RANGE_COLOR,
     MC_INVOKE_VIRTURE,
     MC_SELECT_NEXT,
-    MC_SELECT_PREVEOUS,
+    MC_SELECT_PREVIOUS,
     MC_SELECT_NEAREST,
     MC_ATTACK_SELECTED_TARGET,
     MC_USE_SELECTED_TARGET,
@@ -1125,7 +1241,7 @@ enum MACRO_SUB_CODE
     MSC_G6_PERSEVERANCE,
     MSC_G6_TRIBULATION,
     MSC_G6_DESPAIR,
-    MSC_G7_HOSTILE, //Select Next/Preveous/Nearest group
+    MSC_G7_HOSTILE, //Select Next/Previous/Nearest group
     MSC_G7_PARTY,
     MSC_G7_FOLLOWER,
     MSC_G7_OBJECT,
