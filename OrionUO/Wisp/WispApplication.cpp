@@ -33,6 +33,7 @@ int CApplication::Run(HINSTANCE hinstance)
     MSG msg = { 0 };
     while (msg.message != WM_QUIT)
     {
+#if USE_TIMERTHREAD
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
@@ -43,8 +44,26 @@ int CApplication::Run(HINSTANCE hinstance)
             SDL_Delay(1);
         }
         OnMainLoop();
+#else
+        // 1] Handle events
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        // 2] Run main loop, packets, rendering etc..
+        OnMainLoop();
+
+        // 3] Calculate proper delay based on settings and frame time.
+        int32_t iDynamicFPS = SDL_GetTicks() - g_Ticks;
+        int32_t iDelay = g_OrionWindow.GetRenderDelay();
+
+        SDL_Delay(std::max(iDelay - iDynamicFPS, CPU_USAGE_DELAY));
+#endif
     }
     timeEndPeriod(1);
+
     return (int)msg.wParam;
 #else
 int CApplication::Run()
