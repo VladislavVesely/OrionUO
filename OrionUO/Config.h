@@ -3,15 +3,13 @@
 
 #pragma once
 
-#include <string>
-
 struct Config
 {
-    std::string Login;
-    std::string Password;
-    std::string ClientVersionString = "7.0.33.1";
-    std::string CustomPath;
-    std::string ServerAddress;
+    string Login;
+    string Password;
+    string ClientVersionString = "7.0.33.1";
+    string CustomPath;
+    string ServerAddress;
     uint16_t ServerPort = 2593;
     uint16_t ClientFlag = 0;
     bool SavePassword = false;
@@ -26,7 +24,7 @@ struct Config
     uint32_t Key1 = 0;
     uint32_t Key2 = 0;
     uint32_t Key3 = 0;
-    uint32_t ClientVersion = 0;
+    uint32_t ClientVersion = CV_LATEST;
     uint32_t EncryptionType = 0;
 };
 

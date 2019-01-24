@@ -67,15 +67,12 @@ add_definitions(-D__STDC_CONSTANT_MACROS)
 set(wisp_src
   Wisp/WispApplication.cpp
   Wisp/WispConnection.cpp
-  Wisp/WispGeometry.cpp
-  Wisp/WispLogger.cpp
   Wisp/WispMouse.cpp
   Wisp/WispPacketReader.cpp
   Wisp/WispThread.cpp
   Wisp/WispWindow.cpp
   Wisp/WispBinaryFileWriter.cpp
   Wisp/WispDataStream.cpp
-  Wisp/WispGlobal.cpp
   Wisp/WispMappedFile.cpp
   Wisp/WispPacketMessage.cpp
   Wisp/WispTextFileParser.cpp
@@ -307,6 +304,10 @@ set(crypt_src
 )
 
 set(orion_src
+  Logging.cpp
+  Point.cpp
+  Misc.cpp
+  
   BaseQueue.cpp
   CharacterList.cpp
   CityList.cpp
@@ -335,7 +336,7 @@ set(orion_src
   SelectedObject.cpp
   ServerList.cpp
   SkillGroup.cpp
-  stdafx.cpp
+  OrionPCH.cpp
   Target.cpp
   TargetGump.cpp
   TextureObject.cpp
@@ -383,7 +384,7 @@ macro(orion_library TARGET SRCS)
   string(REPLACE "Crypt/twofish.h" "" headers "${headers}")
   string(REPLACE "CommonInterfaces.h" "plugin/commoninterfaces.h" headers "${headers}")
   add_library(${TARGET} ${SRCS} ${headers})
-  set_target_properties(${TARGET} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "stdafx.h")
+  set_target_properties(${TARGET} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "OrionPCH.h")
   cotire(${TARGET})
 endmacro()
 
@@ -414,12 +415,17 @@ else()
   string(REPLACE ".cpp" ".h" headers "${SRCS}")
   string(REPLACE "Crypt/twofish.h" "" headers "${headers}")
   string(REPLACE "CommonInterfaces.h" "plugin/commoninterfaces.h" headers "${headers}")
-  source_group(TREE "${PROJECT_SOURCE_DIR}/OrionUO/" FILES ${SRCS} ${headers})
+
+  if(${CMAKE_VERSION} VERSION_LESS "3.8.0") 
+    source_group("${PROJECT_SOURCE_DIR}/OrionUO/" FILES ${SRCS} ${headers})
+  else()
+    source_group(TREE "${PROJECT_SOURCE_DIR}/OrionUO/" FILES ${SRCS} ${headers})
+  endif()
 
   if(NOT ORION_WINDOWS)
     add_library(orion SHARED ${SRCS} ${headers})
     target_link_libraries(orion PUBLIC ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${THREAD})
-    set_target_properties(orion PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "stdafx.h")
+    set_target_properties(orion PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "OrionPCH.h")
     cotire(orion)
     if(ORION_OSX)
       add_custom_command(TARGET orion POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/liborion.dylib" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/orion.so")
@@ -440,7 +446,7 @@ endif()
 target_link_libraries(OrionUO PUBLIC ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${THREAD})
 
 if(ORION_WINDOWS)
-  set_target_properties(OrionUO PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "stdafx.h")
+  set_target_properties(OrionUO PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "OrionPCH.h")
   cotire(OrionUO)
   set_target_properties(OrionUO PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
   set_target_properties(OrionUO_unity PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")

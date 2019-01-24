@@ -1,6 +1,11 @@
 ﻿#pragma once
 
-#include "Platform.h"
+#include "BaseScreen.h"
+#include "../Platform.h"
+#include "../Gumps/GumpScreenMain.h"
+
+class CEntryText;
+class CGUICheckbox;
 
 class CMainScreen : public CBaseScreen
 {
@@ -34,6 +39,7 @@ public:
     virtual void OnKeyDown(const KeyEvent &ev) override;
 
     void Save();
+    void Reset() const;
 };
 
 extern CMainScreen g_MainScreen;

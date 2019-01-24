@@ -3,7 +3,11 @@
 
 #pragma once
 
-#include "Platform.h"
+#include "../Platform.h"
+#include "BaseScreen.h"
+#include "../Gumps/GumpScreenGame.h"
+
+class CGameObject;
 
 struct RENDER_VARIABLES_FOR_GAME_WINDOW
 {
@@ -88,6 +92,7 @@ private:
     int m_MaxDrawZ = 0;
     uint32_t m_ProcessAlphaTimer = 0;
     bool m_CanProcessAlpha = false;
+    bool m_zoom = false;
 
     void PreRender();
     void DrawGameWindow(bool render);
@@ -140,6 +145,7 @@ public:
     virtual void OnTextInput(const TextEvent &ev) override;
     virtual void OnKeyDown(const KeyEvent &ev) override;
     virtual void OnKeyUp(const KeyEvent &ev) override;
+    void SetZoom(const bool zommed);
 };
 
 extern CGameScreen g_GameScreen;
